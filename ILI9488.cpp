@@ -105,7 +105,13 @@ void ILI9488::spiwrite(uint8_t c) {
     SPCR = mySPCR;
   #endif
     SPDR = c;
+#if defined(__LGT8FX8P__)
+    while((SPFR & _BV(RDEMPT)));
+//    uint8_t rcvd = SPDR;
+    SPFR = _BV(RDEMPT) | _BV(WREMPT);
+#else
     while(!(SPSR & _BV(SPIF)));
+#endif
   #ifndef SPI_HAS_TRANSACTION
     SPCR = backupSPCR;
   #endif
@@ -922,8 +928,14 @@ uint8_t ILI9488::spiread(void) {
     SPCR = mySPCR;
   #endif
     SPDR = 0x00;
+#if defined(__LGT8FX8P__)
+    while((SPFR & _BV(RDEMPT)));
+    r = SPDR;
+    SPFR = _BV(RDEMPT) | _BV(WREMPT);
+#else
     while(!(SPSR & _BV(SPIF)));
     r = SPDR;
+#endif
 
   #ifndef SPI_HAS_TRANSACTION
     SPCR = backupSPCR;
