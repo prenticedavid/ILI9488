@@ -31,6 +31,7 @@
 #include <SPI.h>
 
 #define USE_ILI9341
+#define RGB_ONCE
 #if defined(USE_ILI9341)
 #undef  ILI9488_TFTWIDTH
 #define ILI9488_TFTWIDTH 240
@@ -696,6 +697,9 @@ void ILI9488::drawPixel(int16_t x, int16_t y, uint16_t color) {
 void ILI9488::drawFastVLine(int16_t x, int16_t y, int16_t h,
  uint16_t color) {
 
+#if defined(RGB_ONCE)
+  fillRect(x, y, 1, h, color);
+#else
   // Rudimentary clipping
   if((x >= _width) || (y >= _height)) return;
 
@@ -730,12 +734,15 @@ void ILI9488::drawFastVLine(int16_t x, int16_t y, int16_t h,
 #endif
 
   if (hwSPI) spi_end();
+#endif
 }
 
 
 void ILI9488::drawFastHLine(int16_t x, int16_t y, int16_t w,
   uint16_t color) {
-
+#if defined(RGB_ONCE)
+  fillRect(x, y, w, 1, color);
+#else
   // Rudimentary clipping
   if((x >= _width) || (y >= _height)) return;
   if((x+w-1) >= _width)  w = _width-x;
@@ -762,6 +769,7 @@ void ILI9488::drawFastHLine(int16_t x, int16_t y, int16_t w,
   digitalWrite(_cs, HIGH);
 #endif
   if (hwSPI) spi_end();
+#endif
 }
 
 void ILI9488::fillScreen(uint16_t color) {
@@ -810,14 +818,24 @@ void ILI9488::fillRect(int16_t x, int16_t y, int16_t w, int16_t h,
         SPI.dmaSend(linebuff, w*3);
       }
 #else
+#if defined(RGB_ONCE)
+  uint8_t r = (color & 0xF800) >> 8;
+  uint8_t g = (color & 0x07E0) >> 3;
+  uint8_t b = (color & 0x001F) << 3;
   for(y=h; y>0; y--) {
     for(x=w; x>0; x--) {
-      // spiwrite(hi);
-      // spiwrite(lo);
-      // spiwrite(0); // added for 24 bit
-      write16BitColor(color);
+      spiwrite(r);
+      spiwrite(g);
+      spiwrite(b); // added for 24 bit
     }
   }
+#else
+  for(y=h; y>0; y--) {
+    for(x=w; x>0; x--) {
+	write16BitColor(color);
+    }
+  }
+#endif
 #endif
 #if defined(USE_FAST_PINIO) && !defined (_VARIANT_ARDUINO_STM32_)
   *csport |= cspinmask;
