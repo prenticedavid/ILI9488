@@ -24,7 +24,8 @@
 #define TFT_RST        PB4
 
 // Use hardware SPI (on Uno, #13, #12, #11) and the above for CS/DC
-ILI9488 tft = ILI9488(TFT_CS, TFT_DC, TFT_RST);
+//ILI9488 tft = ILI9488(TFT_CS, TFT_DC, TFT_RST);
+ILI9488 tft = ILI9488(10, 9, 8);
 // If using the breakout, change pins as desired
 //Adafruit_ILI9488 tft = Adafruit_ILI9488(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
 
