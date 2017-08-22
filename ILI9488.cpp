@@ -31,6 +31,8 @@
 #include <SPI.h>
 
 #define USE_ILI9341
+//fillScreen, drawFastVLine, drawFastHLine all use fillRect. write16BitColor.
+//drawImage, pushColors could also use write16BitColor
 #define RGB_ONCE
 #if defined(USE_ILI9341)
 #undef  ILI9488_TFTWIDTH
@@ -650,6 +652,14 @@ void ILI9488::write16BitColor(uint16_t color){
   //     };
   //     SPI.dmaSend(buff, 3);
   // #else
+#if defined(RGB_ONCE)
+  uint8_t r = (color & 0xF800) >> 8;
+  uint8_t g = (color & 0x07E0) >> 3;
+  uint8_t b = (color & 0x001F) << 3;
+      spiwrite(r);
+      spiwrite(g);
+      spiwrite(b); // added for 24 bit
+#else
   uint8_t r = (color & 0xF800) >> 11;
   uint8_t g = (color & 0x07E0) >> 5;
   uint8_t b = color & 0x001F;
@@ -661,7 +671,7 @@ void ILI9488::write16BitColor(uint16_t color){
   spiwrite(r);
   spiwrite(g);
   spiwrite(b);
-  // #endif
+#endif
 }
 
 void ILI9488::drawPixel(int16_t x, int16_t y, uint16_t color) {
