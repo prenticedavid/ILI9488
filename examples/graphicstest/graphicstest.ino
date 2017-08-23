@@ -25,9 +25,28 @@
 
 // Use hardware SPI (on Uno, #13, #12, #11) and the above for CS/DC
 //ILI9488 tft = ILI9488(TFT_CS, TFT_DC, TFT_RST);
-ILI9488 tft = ILI9488(10, 9, 8);
+ILI9488 tft = ILI9488(10, 9, 8);   //.kbv edit for my hardware
+#define DIAG_HELPER                //.kbv use helper function
 // If using the breakout, change pins as desired
 //Adafruit_ILI9488 tft = Adafruit_ILI9488(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
+
+#if defined(DIAG_HELPER)
+void diag_reg(const char *name, uint8_t reg, uint8_t n)
+{
+    uint8_t x = reg;
+    Serial.print(name);
+    Serial.print(" (0x");
+    Serial.print(x < 0x10 ? "0" : "");
+    Serial.print(x, HEX);
+    Serial.print("):");
+    for (int i = 0; i < n; i++) {
+        uint8_t x = tft.readcommand8(reg, i);
+        Serial.print(x < 0x10 ? " 0" : " ");
+        Serial.print(x, HEX);
+    }
+    Serial.println("");
+}
+#endif
 
 void setup() {
   Serial.begin(9600);
@@ -35,6 +54,26 @@ void setup() {
 
   tft.begin();
 
+#if defined(DIAG_HELPER)
+    // read diagnostics (optional but can help debug problems)
+    diag_reg("ILI9488_RDDID", 0x04, 5);
+    diag_reg("ILI9488_RDIMGFMT", 0x0A, 1);
+    diag_reg("ILI9488_RDMADCTL", 0x0B, 1);
+    diag_reg("ILI9488_RDPIXFMT", 0x0C, 1);
+    diag_reg("ILI9488_RDSELFDIAG", 0x0F, 1);
+    diag_reg("ILI9488_DFUNCTR", 0xb6, 5);
+    diag_reg("ILI9488_PWCTR1", 0xC0, 3);
+    diag_reg("ILI9488_VMCTR1", 0xC5, 3);
+    diag_reg("ILI9488_VMCTR2", 0xC7, 2);
+    diag_reg("NVM Status   ", 0xD2, 3);
+    diag_reg("ID4          ", 0xD3, 4);
+    diag_reg("ILI9488_RDID1", 0xDA, 2);
+    diag_reg("ILI9488_RDID2", 0xDB, 2);
+    diag_reg("ILI9488_RDID3", 0xDC, 2);
+    diag_reg("GAMMAP       ", 0xE0, 16);
+    diag_reg("GAMMAN       ", 0xE1, 16);
+    diag_reg("INTERFACE    ", 0xf6, 4);
+#else
   // read diagnostics (optional but can help debug problems)
   uint8_t x = tft.readcommand8(ILI9488_RDMODE);
   Serial.print("Display Power Mode: 0x"); Serial.println(x, HEX);
@@ -46,6 +85,7 @@ void setup() {
   Serial.print("Image Format: 0x"); Serial.println(x, HEX);
   x = tft.readcommand8(ILI9488_RDSELFDIAG);
   Serial.print("Self Diagnostic: 0x"); Serial.println(x, HEX);
+#endif
 
   Serial.println(F("Benchmark                Time (microseconds)"));
 
