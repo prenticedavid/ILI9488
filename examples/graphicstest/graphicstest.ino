@@ -50,6 +50,7 @@ void diag_reg(const char *name, uint8_t reg, uint8_t n)
 
 void setup() {
   Serial.begin(9600);
+  delay(1000);   //.kbv allow Teensy Serial to start
   Serial.println("ILI9488 Test!");
 
   tft.begin();
