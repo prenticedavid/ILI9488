@@ -970,7 +970,13 @@ uint8_t ILI9488::spiread(void) {
 
 
 uint8_t ILI9488::readcommand8(uint8_t c, uint8_t index) {
-   if (hwSPI) spi_begin();
+   if (hwSPI) {
+#if 1 && defined(SPI_HAS_TRANSACTION)
+       SPI.beginTransaction(SPISettings(12000000, MSBFIRST, SPI_MODE0));
+#else
+       spi_begin();
+#endif
+   }
    digitalWrite(_dc, LOW); // command
    digitalWrite(_cs, LOW);
    spiwrite(SPIREAD_CMD);  // woo sekret command?
