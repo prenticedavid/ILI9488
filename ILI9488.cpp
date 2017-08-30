@@ -454,7 +454,7 @@ void ILI9488::begin(void) {
 	writedata(0x66); 	  //18 bit
 
 	writecommand(0XB0);      // Interface Mode Control
-	writedata(0x80);     			 //SDO NOT USE
+	writedata(0x00);         //.kbv use separate SDI, SDO pins (was 0x80)
 
 	writecommand(0xB1);      //Frame rate
 	writedata(0xA0);    //60Hz
