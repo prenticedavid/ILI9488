@@ -30,7 +30,7 @@
 #include <limits.h>
 #include <SPI.h>
 
-#define USE_ILI9341
+//#define USE_ILI9341
 //fillScreen, drawFastVLine, drawFastHLine all use fillRect. write16BitColor.
 //drawImage, pushColors could also use write16BitColor
 #define RGB_ONCE
@@ -992,6 +992,14 @@ uint8_t ILI9488::readcommand8(uint8_t c, uint8_t index) {
    digitalWrite(_dc, HIGH);
    uint8_t r = spiread();
    digitalWrite(_cs, HIGH);
+
+   digitalWrite(_dc, LOW); // command
+   digitalWrite(_cs, LOW);
+   spiwrite(SPIREAD_CMD);  // woo sekret command?
+   digitalWrite(_dc, HIGH); // data
+   spiwrite(0);            // ILI9488 MUST disable afterwards
+   digitalWrite(_cs, HIGH);
+
    if (hwSPI) spi_end();
    return r;
 }
