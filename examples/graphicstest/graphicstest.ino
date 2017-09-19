@@ -25,7 +25,13 @@
 
 // Use hardware SPI (on Uno, #13, #12, #11) and the above for CS/DC
 //ILI9488 tft = ILI9488(TFT_CS, TFT_DC, TFT_RST);
+#if defined(ESP32)
+ILI9488 tft = ILI9488(5, 13, 12);   //.kbv edit for my hardware
+#elif defined(ESP8266)
+ILI9488 tft = ILI9488(D10, D9, D8);   //.kbv edit for my hardware
+#else
 ILI9488 tft = ILI9488(10, 9, 8);   //.kbv edit for my hardware
+#endif
 #define DIAG_HELPER                //.kbv use helper function
 // If using the breakout, change pins as desired
 //Adafruit_ILI9488 tft = Adafruit_ILI9488(TFT_CS, TFT_DC, TFT_MOSI, TFT_CLK, TFT_RST, TFT_MISO);
