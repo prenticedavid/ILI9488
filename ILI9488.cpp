@@ -30,7 +30,7 @@
 #include <limits.h>
 #include <SPI.h>
 
-#define USE_ILI9341
+//#define USE_ILI9341
 //fillScreen, drawFastVLine, drawFastHLine all use fillRect. write16BitColor.
 //drawImage, pushColors could also use write16BitColor
 #define RGB_ONCE
