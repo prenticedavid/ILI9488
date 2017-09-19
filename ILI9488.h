@@ -27,7 +27,7 @@
 #include <Adafruit_GFX.h>
 #ifdef __AVR
   #include <avr/pgmspace.h>
-#elif defined(ESP8266)
+#elif defined(ESP8266) || defined(ESP32)
   #include <pgmspace.h>
 #endif
 
@@ -186,7 +186,7 @@ class ILI9488 : public Adafruit_GFX {
     volatile RwReg *mosiport, *clkport, *dcport, *rsport, *csport;
     int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
     uint32_t  mosipinmask, clkpinmask, cspinmask, dcpinmask;
-#elif defined (ESP8266)
+#elif defined (ESP8266) || defined(ESP32)
     int32_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
 #else
     int8_t  _cs, _dc, _rst, _mosi, _miso, _sclk;
